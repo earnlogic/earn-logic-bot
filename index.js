@@ -1,7 +1,7 @@
 const TelegramBot = require('node-telegram-bot-api');
 const admin = require('firebase-admin');
 
-// Firebase Setup (এটি সরাসরি এনভায়রনমেন্ট ভেরিয়েবল থেকে তথ্য নেবে)
+// Firebase Setup (এটি সরাসরি Render-এর Environment থেকে তথ্য নেবে)
 const serviceAccount = {
   "projectId": "earn-logic",
   "privateKey": process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
@@ -17,7 +17,7 @@ const db = admin.database();
 const token = '7891784914:AAHw53S8Xp6H571f5W6-qM0i0G6fR0G6fA';
 const bot = new TelegramBot(token, {polling: true});
 
-// বাটন মেনু (রেফার ও উইথড্র সহ)
+// বাটন মেনু (যেখানে রেফার ও উইথড্র যোগ করা হয়েছে)
 const mainMenu = {
   reply_markup: {
     inline_keyboard: [
@@ -45,7 +45,7 @@ bot.on('callback_query', (query) => {
   }
 
   if (query.data === 'profile') {
-    bot.sendMessage(chatId, `👤 নাম: ${query.from.first_name}\n🆔 আইডি: ${userId}`);
+    bot.sendMessage(chatId, `👤 নাম: ${query.from.first_name}\n🆔 আইডি: ${userId}\n💰 ব্যালেন্স চেক করতে পাশের বাটনে ক্লিক করুন।`);
   }
 
   if (query.data === 'refer') {
@@ -53,6 +53,6 @@ bot.on('callback_query', (query) => {
   }
 
   if (query.data === 'withdraw') {
-    bot.sendMessage(chatId, "💸 উইথড্র করার জন্য ১০০০ পয়েন্ট প্রয়োজন।");
+    bot.sendMessage(chatId, "💸 উইথড্র করার জন্য বর্তমানে ওয়েবসাইট ব্যবহার করুন।");
   }
 });
