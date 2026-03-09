@@ -1,9 +1,9 @@
 const TelegramBot = require('node-telegram-bot-api');
 const admin = require('firebase-admin');
 
-// Firebase Setup (এটি সরাসরি Render-এর Environment থেকে তথ্য নেবে)
+// Firebase Setup
 const serviceAccount = {
-  "projectId": "earn-logic",
+  "projectId": "earn-logic-default-rtdb", // ইউআরএল অনুযায়ী প্রজেক্ট আইডি আপডেট করা হয়েছে
   "privateKey": process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
   "clientEmail": process.env.FIREBASE_CLIENT_EMAIL
 };
@@ -14,10 +14,11 @@ admin.initializeApp({
 });
 
 const db = admin.database();
-const token = '7891784914:AAHw53S8Xp6H571f5W6-qM0i0G6fR0G6fA';
+// তোমার টোকেনটি এখানে ঠিক আছে কি না BotFather থেকে একবার মিলিয়ে নিও
+const token = '8664803411:AAEcv_b4VoS5pBNeAJ5hqmVdtjg006E_qkg;
 const bot = new TelegramBot(token, {polling: true});
 
-// বাটন মেনু (যেখানে রেফার ও উইথড্র যোগ করা হয়েছে)
+// বাটন মেনু
 const mainMenu = {
   reply_markup: {
     inline_keyboard: [
@@ -41,6 +42,8 @@ bot.on('callback_query', (query) => {
     db.ref('users/' + userId + '/balance').once('value').then((snapshot) => {
       const balance = snapshot.val() || 0;
       bot.sendMessage(chatId, `💰 আপনার বর্তমান ব্যালেন্স: ${balance} পয়েন্ট।`);
+    }).catch(err => {
+      bot.sendMessage(chatId, "⚠️ ডাটাবেস কানেকশনে সমস্যা হচ্ছে।");
     });
   }
 
