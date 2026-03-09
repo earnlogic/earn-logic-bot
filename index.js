@@ -15,8 +15,8 @@ admin.initializeApp({
 
 const db = admin.database();
 // তোমার টোকেনটি এখানে ঠিক আছে কি না BotFather থেকে একবার মিলিয়ে নিও
-const token = '8664803411:AAEcv_b4VoS5pBNeAJ5hqmVdtjg006E_qkg;
-const bot = new TelegramBot(token, {polling: true});
+const token = '8664803411:AAEcv_b4VoS5pBNeAJ5hqmVdtjg006E_qkg';
+const bot = new TelegramBotttoken, {polling: true});
 
 // বাটন মেনু
 const mainMenu = {
