@@ -59,3 +59,10 @@ bot.on('callback_query', (query) => {
     bot.sendMessage(chatId, "💸 উইথড্র করার জন্য বর্তমানে ওয়েবসাইট ব্যবহার করুন।");
   }
 });
+
+// Render-এর পোর্ট সমস্যা সমাধানের জন্য ছোট একটি সার্ভার
+const http = require('http');
+http.createServer((req, res) => {
+  res.writeHead(200, { 'Content-Type': 'text/plain' });
+  res.end('Earn Logic Bot is Live!');
+}).listen(process.env.PORT || 3000);
