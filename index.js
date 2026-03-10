@@ -45,6 +45,8 @@ bot.on('callback_query', (query) => {
   const chatId = query.message.chat.id;
   const userId = query.from.id;
 
+  bot.answerCallbackQuery(query.id);
+  
   if (query.data === 'balance') {
     db.ref('users/' + userId + '/balance').once('value').then((snapshot) => {
       const balance = snapshot.val() || 0;
