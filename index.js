@@ -60,9 +60,8 @@ bot.on('callback_query', (query) => {
   }
 });
 
-// Render-এর পোর্ট সমস্যা সমাধানের জন্য ছোট একটি সার্ভার
-const http = require('http');
+// Render Port Fix
 http.createServer((req, res) => {
   res.writeHead(200, { 'Content-Type': 'text/plain' });
-  res.end('Earn Logic Bot is Live!');
+  res.end('Bot is running!');
 }).listen(process.env.PORT || 3000);
