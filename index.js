@@ -45,23 +45,33 @@ bot.on('callback_query', (query) => {
   const chatId = query.message.chat.id;
   const userId = query.from.id;
 
+  // বাটন ক্লিকের লোডিং অ্যানিমেশন বন্ধ করার জন্য
   bot.answerCallbackQuery(query.id);
   
+  // ব্যালেন্স বাটন লজিক
   if (query.data === 'balance') {
-    db.ref('users/' + userId + '/balance').once('value').then((snapshot) => {
-      const balance = snapshot.val() || 0;
-      bot.sendMessage(chatId, `💰 আপনার বর্তমান ব্যালেন্স: ${balance} পয়েন্ট।`);
-    });
+    db.ref('users/' + userId + '/balance').once('value')
+      .then((snapshot) => {
+        const balance = snapshot.val() || 0;
+        bot.sendMessage(chatId, `💰 আপনার বর্তমান ব্যালেন্স: ${balance} পয়েন্ট।`);
+      })
+      .catch((error) => {
+        console.error(error);
+        bot.sendMessage(chatId, "⚠️ ব্যালেন্স লোড করতে সমস্যা হয়েছে।");
+      });
   }
 
+  // প্রোফাইল বাটন লজিক
   if (query.data === 'profile') {
     bot.sendMessage(chatId, `👤 নাম: ${query.from.first_name}\n🆔 আইডি: ${userId}`);
   }
 
+  // রেফার বাটন লজিক
   if (query.data === 'refer') {
     bot.sendMessage(chatId, `👥 রেফার লিঙ্ক:\nhttps://t.me/earnlogic_official_bot?start=${userId}`);
   }
 
+  // উইথড্র বাটন লজিক
   if (query.data === 'withdraw') {
     bot.sendMessage(chatId, "💸 উইথড্র বর্তমানে ওয়েবসাইট থেকে করতে হবে।");
   }
