@@ -17,62 +17,70 @@ const serviceAccount = {
 
 if (!admin.apps.length) {
   admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-    databaseURL: "https://earn-logic-default-rtdb.firebaseio.com/"
+    credential: admin.credential.cert(serviceAccount)
+    // Firestore uses projectId from serviceAccount, so databaseURL is optional for Firestore
   });
 }
 
-const db = admin.database();
-const token = '8664803411:AAEcv_b4VoS5pBNeAJ5hqmVdtjg006E_qkg';
+// Switching to Firestore
+const db = admin.firestore(); 
+
+const token = '8664803411:AAEcv_b4VoS*****************006E_qkg';
 const bot = new TelegramBot(token, {polling: true});
 
-// বাটন মেনু
+// Main Menu Button (English)
 const mainMenu = {
   reply_markup: {
     inline_keyboard: [
-      [{ text: '🌐 ওয়েবসাইট', url: 'https://earn-logic.github.io' }],
-      [{ text: '👤 প্রোফাইল', callback_data: 'profile' }, { text: '💰 ব্যালেন্স', callback_data: 'balance' }],
-      [{ text: '👥 রেফার', callback_data: 'refer' }, { text: '💸 উইথড্র', callback_data: 'withdraw' }]
+      [{ text: '🌐 Website', url: 'https://earn-logic.github.io' }],
+      [{ text: '👤 Profile', callback_data: 'profile' }, { text: '💰 Balance', callback_data: 'balance' }],
+      [{ text: '👥 Refer', callback_data: 'refer' }, { text: '💸 Withdraw', callback_data: 'withdraw' }]
     ]
   }
 };
 
+// Start Command
 bot.onText(/\/start/, (msg) => {
-  bot.sendMessage(msg.chat.id, "👋 স্বাগতম Earn Logic বটে!", mainMenu);
+  bot.sendMessage(msg.chat.id, "👋 Welcome to Earn Logic Bot!", mainMenu);
 });
 
+// Callback Query Logic
 bot.on('callback_query', (query) => {
   const chatId = query.message.chat.id;
   const userId = query.from.id;
 
-  // বাটন ক্লিকের লোডিং অ্যানিমেশন বন্ধ করার জন্য
   bot.answerCallbackQuery(query.id);
   
-  // ব্যালেন্স বাটন লজিক
+  // Balance Logic (Firestore)
   if (query.data === 'balance') {
-    db.ref('users/' + userId + '/balance').once('value')
-      .then((snapshot) => {
-        const balance = snapshot.val() || 0;
-        bot.sendMessage(chatId, `💰 আপনার বর্তমান ব্যালেন্স: ${balance} পয়েন্ট।`);
+    db.collection('users').doc(String(userId)).get()
+      .then((doc) => {
+        if (doc.exists) {
+          const userData = doc.data();
+          const coins = userData.coins || 0;
+          bot.sendMessage(chatId, `💰 Your Current Balance: ${coins} Points.`);
+        } else {
+          bot.sendMessage(chatId, "💰 Your Current Balance: 0 Points.\n(Please link your Telegram ID on our website)");
+        }
       })
       .catch((error) => {
-        console.error(error);
-        bot.sendMessage(chatId, "⚠️ ব্যালেন্স লোড করতে সমস্যা হয়েছে।");
+        console.error("Firestore Error:", error);
+        bot.sendMessage(chatId, "⚠️ Error loading balance.");
       });
   }
 
-  // প্রোফাইল বাটন লজিক
+  // Profile Logic
   if (query.data === 'profile') {
-    bot.sendMessage(chatId, `👤 নাম: ${query.from.first_name}\n🆔 আইডি: ${userId}`);
+    bot.sendMessage(chatId, `👤 Name: ${query.from.first_name}\n🆔 ID: ${userId}`);
   }
 
-  // রেফার বাটন লজিক
+  // Refer Logic
   if (query.data === 'refer') {
-    bot.sendMessage(chatId, `👥 রেফার লিঙ্ক:\nhttps://t.me/earnlogic_official_bot?start=${userId}`);
+    bot.sendMessage(chatId, `👥 Referral Link:\nhttps://t.me/earnlogic_official_bot?start=${userId}`);
   }
 
-  // উইথড্র বাটন লজিক
+  // Withdraw Logic
   if (query.data === 'withdraw') {
-    bot.sendMessage(chatId, "💸 উইথড্র বর্তমানে ওয়েবসাইট থেকে করতে হবে।");
+    bot.sendMessage(chatId, "💸 Withdrawals must be processed through our website.");
   }
 });
