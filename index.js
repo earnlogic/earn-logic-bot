@@ -25,7 +25,7 @@ if (!admin.apps.length) {
 // Switching to Firestore
 const db = admin.firestore(); 
 
-const token = '8664803411:AAEcv_b4VoS*****************006E_qkg';
+const token = '8664803411:AAEcv_b4VoS5pBNeAJ5hqmVdtjg006E_qkg';
 const bot = new TelegramBot(token, {polling: true});
 
 // Main Menu Button (English)
